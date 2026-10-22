@@ -1,3 +1,6 @@
 export default {
-    currenctCategory:{}
+    currentCategory:{},
+    categories:[],
+    products:[],
+    cart:[]
 }
