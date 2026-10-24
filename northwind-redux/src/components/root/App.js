@@ -3,6 +3,8 @@ import Navi from "../navi/Navi";
 import Dashboard from "./Dashboard";
 import { Route, Routes } from "react-router-dom";
 import CartDetail from "../cart/CartDetail";
+import AddOrUpdateProduct from "../products/AddOrUpdateProduct";
+import NotFound from "../common/NotFound";
 
 function App() {
   return (
@@ -11,7 +13,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/product" element={<Dashboard />} />
+        <Route path="/saveproduct/:productId" element={<AddOrUpdateProduct />} />
+        <Route path="/saveproduct" element={<AddOrUpdateProduct />} />
         <Route path="/cart" element={<CartDetail />} />
+        <Route element={<NotFound />} />
       </Routes>
     </Container>
   );

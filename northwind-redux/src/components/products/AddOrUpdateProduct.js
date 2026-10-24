@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { saveProduct } from "../../redux/actions/productActions";
+import { useNavigate, useParams } from "react-router-dom";
+import { getProducts, saveProduct } from "../../redux/actions/productActions";
 import { getCategories } from "../../redux/actions/categoryActions";
+import ProductDetail from "./ProductDetail";
 
 function AddOrUpdateProduct({
   products,
@@ -9,13 +11,17 @@ function AddOrUpdateProduct({
   getProducts,
   getCategories,
   saveProduct,
-  history,
+  navigate,
   ...props
 }) {
   const [product, setProduct] = useState({ ...props.product });
+  const [errors, setErrors] = useState({});
   useEffect(() => {
     if (categories.length === 0) {
       getCategories();
+    }
+    if (products.length === 0) {
+      getProducts();
     }
     setProduct({ ...props.product });
   }, [props.product]);
@@ -26,35 +32,65 @@ function AddOrUpdateProduct({
       ...previousProduct,
       [name]: name === "categoryId" ? parseInt(value, 10) : value,
     }));
+    validate(name, value);
+     
+  }
+  function validate(name, value){
+     if (name==="productName" && value==="") {
+      setErrors(previousErrors=>({...previousErrors, productName:"Product Name must have"}))
+    }else{
+       setErrors(previousErrors=>({...previousErrors, productName:""}))
+    }
   }
 
   function handleSave(event) {
     event.preventDefault();
     saveProduct(product).then(() => {
-      history.push("/");
+      navigate("/");
     });
   }
-
+  return (
+    <ProductDetail
+      product={product}
+      categories={categories}
+      onChange={handleChange}
+      onSave={handleSave}
+      errors={errors}
+    ></ProductDetail>
+  );
 }
 export function getProductById(products, productId) {
-  let product = products.find((product) => product.id === productId) || null;
+  let product = products.find((product) => product.id == productId) || null;
   return product;
 }
 function mapStateToProps(state, ownProps) {
-  const productId = ownProps.match.params.productId;
+  const productId = ownProps.productId;
   const product =
-    productId && state.productReducer.length > 0
-      ? getProductById(state.productReducer, productId)
+    productId && state.productListReducer.length > 0
+      ? getProductById(state.productListReducer, productId)
       : {};
   return {
     product,
-    products: state.productReducer,
-    categories: state.categoryReducer,
+    products: state.productListReducer,
+    categories: state.categoryListReducer,
   };
 }
 const mapDispatchToProps = {
   getCategories,
+  getProducts,
   saveProduct,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddOrUpdateProduct);
+const ConnectedAddOrUpdateProduct = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AddOrUpdateProduct);
+
+// React Router v6+ artık match/history prop'u geçmiyor, hook'larla alıp iletiyoruz
+export default function AddOrUpdateProductPage() {
+  const { productId } = useParams();
+  const navigate = useNavigate();
+  return (
+    <ConnectedAddOrUpdateProduct productId={productId} navigate={navigate} />
+  );
+}
