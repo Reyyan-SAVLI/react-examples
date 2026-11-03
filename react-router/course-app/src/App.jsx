@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 import HomePage from "./pages/Home";
-import CoursesPage, { coursesLoader } from "./pages/course/Courses";
+import CoursesPage, { courseDeleteAction, coursesLoader } from "./pages/course/Courses";
 import AboutPage from "./pages/About";
 import MainLayout from "./layouts/MainLayout";
 import HelpLayout from "./layouts/HelpLAyout";
@@ -12,6 +12,9 @@ import CourseDetailsPage, {
 import CourseLayout from "./layouts/CourseLayout";
 import CourseCreate from "./pages/course/CourseCreate";
 import CourseEdit from "./pages/course/CourseEdit";
+import { courseAction } from "./pages/course/CourseForm";
+import NotFoundPage from "./pages/error/NotFoundPage";
+import ErrorPage from "./pages/error/ErrorPage";
 
 const routes = [
   {
@@ -24,18 +27,21 @@ const routes = [
       {
         path: "courses",
         element: <CourseLayout />,
+        errorElement: <ErrorPage/>,
         children: [
           { index: true, element: <CoursesPage />, loader: coursesLoader },
           {
             id: "course-details",
             path: ":courseid",
+            
             loader: courseDetailsLoader,
             children: [
               {index: true,element: <CourseDetailsPage />},
-              { path: "edit", element: <CourseEdit /> },
+              { path: "edit", element: <CourseEdit />, action: courseAction},
+              {path: "delete", action: courseDeleteAction}
             ],
           },
-          { path: "create", element: <CourseCreate /> },
+          { path: "create", element: <CourseCreate />, action: courseAction},
         ],
       },
 
@@ -48,6 +54,7 @@ const routes = [
           { path: "faq", element: <FaqPage /> },
         ],
       },
+      {path: "*", element: <NotFoundPage />}
     ],
   },
 ];
