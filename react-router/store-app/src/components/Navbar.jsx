@@ -2,12 +2,12 @@ import { AppBar, Badge, Box, Button, IconButton, Toolbar } from "@mui/material";
 import StoreIcon from "@mui/icons-material/Store";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Link, NavLink } from "react-router";
+import { useCartContext } from "../context/CartContext";
 
 const links = [
   { title: "Home", to: "/" },
   { title: "Products", to: "/products" },
   { title: "Errors", to: "/errors" },
-
 ];
 const authlinks = [
   { title: "Login", to: "/login" },
@@ -15,15 +15,25 @@ const authlinks = [
 ];
 
 export default function Navbar() {
+  const { cart } = useCartContext();
+  const itemCount = cart?.cartItems.reduce(
+    (total, item) => total + item.product.quantity,
+    0,
+  );
   return (
-    <AppBar position="static" sx={{backgroundColor:"secondary.light"}}>
+    <AppBar position="static" sx={{ backgroundColor: "secondary.light" }}>
       <Toolbar>
         <Box sx={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
           <IconButton color="inherit">
             <StoreIcon></StoreIcon>
           </IconButton>
           {links.map((link) => (
-            <Button key={link.to} component={NavLink} to={link.to} color="inherit">
+            <Button
+              key={link.to}
+              component={NavLink}
+              to={link.to}
+              color="inherit"
+            >
               {link.title}
             </Button>
           ))}
@@ -36,12 +46,17 @@ export default function Navbar() {
             size="large"
             edge="start"
           >
-            <Badge badgeContent="2" color="secondary">
+            <Badge badgeContent={itemCount} color="secondary">
               <ShoppingCartIcon></ShoppingCartIcon>
             </Badge>
           </IconButton>
           {authlinks.map((link) => (
-            <Button key={link.to} component={NavLink} to={link.to} color="inherit">
+            <Button
+              key={link.to}
+              component={NavLink}
+              to={link.to}
+              color="inherit"
+            >
               {link.title}
             </Button>
           ))}

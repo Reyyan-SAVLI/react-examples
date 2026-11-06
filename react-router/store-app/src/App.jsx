@@ -9,6 +9,9 @@ import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ErrorPage from "./pages/errors/ErrorPage";
 import ServerErrorPage from "./pages/errors/ServerErrorPage";
 import NotFoundPage from "./pages/errors/NotFoundPage";
+import { useContext, useEffect } from "react";
+import requests from "./api/apiClient";
+import { CartContext, useCartContext } from "./context/CartContext";
 
 export const router = createBrowserRouter([
   {
@@ -41,6 +44,14 @@ export const router = createBrowserRouter([
 ]);
 
 function App() {
+  const {setCart} = useCartContext();
+
+
+  useEffect(()=>{
+    requests.cart.get()
+    .then(cart=>setCart(cart))
+    .catch(error=>console.log(error));
+  },[]);
   return <RouterProvider router={router} />;
 }
 
